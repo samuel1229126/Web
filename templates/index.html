@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>帖子网站</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>帖子列表</h1>
+        {% if current_user.is_authenticated %}
+            <p>欢迎, {{ current_user.username }}!
+               <a href="{{ url_for('logout') }}" class="btn btn-danger">登出</a></p>
+        {% else %}
+            <p><a href="{{ url_for('login') }}" class="btn btn-primary">登录</a> |
+               <a href="{{ url_for('register') }}" class="btn btn-success">注册</a></p>
+        {% endif %}
+
+        <form method="POST" action="/post">
+            <div class="form-group">
+                <input type="text" class="form-control" name="title" placeholder="帖子标题" required>
+            </div>
+            <div class="form-group">
+                <textarea class="form-control" name="content" placeholder="帖子内容" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">提交帖子</button>
+        </form>
+
+        <h2>帖子</h2>
+        <div>
+            {% for post in posts %}
+            <div class="post">
+                <h3>{{ post.title }}</h3>
+                <p>{{ post.content }}</p>
+                <p>作者: {{ post.author }}</p>
+
+                <h4>回复</h4>
+                <ul>
+                    {% for reply in post.replies %}
+                    <li>{{ reply.content }} - <strong>{{ reply.author }}</strong></li>
+                    {% endfor %}
+                </ul>
+
+                <form method="POST" action="/reply/{{ loop.index0 }}">
+                    <div class="form-group">
+                        <textarea class="form-control" name="reply_content" placeholder="回复内容" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-secondary">回复</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
